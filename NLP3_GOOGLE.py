@@ -1,9 +1,12 @@
 #读取数据
 import json
+from re import VERBOSE
 
-with open(r"D:\Individual\Work\Documents\Python_vscode\archive\Sarcasm_Headlines_Dataset_v2.json", 'r') as f:
+from tensorflow.python.keras.utils.generic_utils import validate_config
+
+with open(r"D:\Individual\Work\Documents\Python_vscode\NLP_learning\archive\Sarcasm_Headlines_Dataset.json", 'r') as f:
     datastore = json.load(f)
-
+#FUCK Google视屏里给的这个json文件没逗号 我傻了
 sentences = [] 
 labels = []
 urls = []
@@ -39,5 +42,14 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 model = tf.keras.Sequential([
-    layers.Embedding(1000,16)
+    layers.Embedding(1000,16),
+    layers.GlobalAveragePooling1D(),
+    layers.Dense(16,activation='relu'),
+    layers.Dense(1,activation='sigmoid')
 ])
+model.compile(loss = 'binary_crossentropy',optimizer = 'adam',metrics = ['accuracy'])
+
+num_epochs = 30
+history = model.fit(training_padded,training_labels,epochs = num_epochs,
+    validation_data = (testing_padded,testing_labels), VERBOSE= 2
+)
